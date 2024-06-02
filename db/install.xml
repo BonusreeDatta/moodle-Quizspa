@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/quizspa/db" VERSION="2024053101" COMMENT="XMLDB file for QuizSPA module">
+<XMLDB PATH="mod/quizspa/db" VERSION="2024053103" COMMENT="XMLDB file for QuizSPA module">
     <TABLES>
         <TABLE NAME="quizspa" COMMENT="Table for QuizSPA instances">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" UNSIGNED="true" NOTNULL="true" SEQUENCE="true" COMMENT="Primary key"/>
-                <FIELD NAME="course" TYPE="int" LENGTH="10" UNSIGNED="true" NOTNULL="true" COMMENT="Course ID"/>
-                <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" COMMENT="Instance name"/>
-                <FIELD NAME="intro" TYPE="text" NOTNULL="false" COMMENT="Introduction text"/>
-                <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" COMMENT="Format of the introduction text"/>
+                <FIELD NAME="course" TYPE="int" LENGTH="10" UNSIGNED="true" NOTNULL="true" SEQUENCE="true" COMMENT="Course ID"/>
+                <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="true"COMMENT="Instance name"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="" SEQUENCE="true" COMMENT="The timestamp of when the activity was last modified"/>
+                <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="true"  COMMENT="Introduction text"/>
+                <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="true" COMMENT="Format of the introduction text"/>
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
