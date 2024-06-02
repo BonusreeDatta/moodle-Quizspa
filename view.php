@@ -15,36 +15,16 @@ $PAGE->set_url('/mod/quizspa/view.php', array('id' => $cm->id));
 $PAGE->set_title(format_string($quizspa->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->add_body_class('limitedwidth');
-echo $OUTPUT->header();
+ echo $OUTPUT->header();
+ $templatecontext = (object) [
+    'cmid'=>$cm->id,
+    'courseid'=>$course->id,
+    'addquestionurl'=>new moodle_url('/question/edit.php'),
+    'attempturl'=>new moodle_url('/mod/quizspa/get_questions.php'),
+    'backcourse'=>new moodle_url('/course/view.php', array('id' => $course->id)),
 
-
-// Add the "Question Bank" button
-echo html_writer::link(
-    new moodle_url('/question/edit.php', array('cmid' => $cm->id)),
-    get_string('questionbank', 'mod_quizspa'),
-    array('class' => 'btn btn-outline-primary')
-);
-
-// Add the "Add Question" button
-echo html_writer::link(
-    new moodle_url('/mod/quizspa/addquestion.php', array('id' => $cm->id)),
-    get_string('addquestion', 'mod_quizspa'),
-    array('class' => 'btn btn-primary ml-3')
-);
-echo html_writer::empty_tag('br');
-
-
-//back to the course 
-echo '<div class="row justify-content-center">';
-echo '<div class="col-auto">';
-echo html_writer::link(
-    new moodle_url('/course/view.php', array('id' => $course->id)),
-    get_string('backcourse', 'mod_quizspa'),
-    array('class' => 'btn btn-lg btn-secondary mt-6 ')
-);
-echo '</div>'; // close col-auto
-echo '</div>'; // close row
+ ];
+ echo $OUTPUT->render_from_template('mod_quizspa/view', $templatecontext);
 
 echo $OUTPUT->footer();
-
-
+?>

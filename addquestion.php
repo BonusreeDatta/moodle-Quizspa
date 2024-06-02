@@ -1,53 +1,54 @@
 <?php
+// Include necessary files and configurations
 require_once('../../config.php');
 require_once('lib.php');
 
-$id = required_param('id', PARAM_INT); 
+// Retrieve any necessary parameters
+// For example, if you need to pass a course ID, you can retrieve it from the request
+$courseid = required_param('courseid', PARAM_INT);
 
-$cm = get_coursemodule_from_id('quizspa', $id, 0, false, MUST_EXIST);
-$course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-$quizspa = $DB->get_record('quizspa', array('id' => $cm->instance), '*', MUST_EXIST);
+// Set the appropriate content type for the response
+header('Content-Type: application/json');
 
-require_login($course, true, $cm);
-
-
-
-$context = context_module::instance($cm->id);
-$PAGE->set_url('/mod/quizspa/addquestion.php', array('id' => $cm->id));
-$PAGE->set_title(format_string($quizspa->name));
-$PAGE->set_heading(format_string($course->fullname));
-$PAGE->add_body_class('limitedwidth');
-echo $OUTPUT->header();
-
-$questions = get_mcq_questions();
-$i = 1;
-$optionLetters = range('a', 'z'); 
-
-foreach ($questions as $question) {
-    echo html_writer::tag('h4', $i . '. ' . format_string($question->questiontext));
+try {
+    // Retrieve the course data if necessary
+    $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
     
-    $options = get_mcq_options($question->id);
-    echo html_writer::start_tag('ul');
-    $optionIndex = 0;
-    foreach ($options as $option) {
-        echo html_writer::tag('li', $optionLetters[$optionIndex] . '. ' . format_string($option->answer));
-        $optionIndex++;
+    // Ensure user is logged in
+    require_login($course);
+    
+    // Get the questions data
+    $questions = get_questions_from_database($courseid);
+
+    // Format the data as JSON and output it
+    echo json_encode($questions);
+
+    // Include JavaScript using js_call_amd function
+    $PAGE->requires->js_call_amd('mod_quizspa/addquestion', 'init', [$courseid]);
+
+ 
+
+// Function to get questions from the database
+function get_questions_from_database($courseid) {
+    global $DB;
+
+    // Query the database to retrieve questions data
+    $sql = "SELECT * FROM {questions} WHERE courseid = ?";
+    $questions = $DB->get_records_sql($sql, array($courseid));
+
+    // Format the data as needed
+    $formattedQuestions = array();
+    foreach ($questions as $question) {
+        // Format each question as an array
+        $formattedQuestion = array(
+            'id' => $question->id,
+            'questiontext' => $question->questiontext,
+            // Add any other fields you need
+        );
+        // Push the formatted question to the array
+        $formattedQuestions[] = $formattedQuestion;
     }
-    echo html_writer::end_tag('ul');
-    $i++;
+
+    return $formattedQuestions;
 }
-
-echo $OUTPUT->footer();
-
-function get_mcq_questions() {
-    global $DB;
-    $sql = "SELECT * FROM {question} WHERE qtype = 'multichoice'";
-    return $DB->get_records_sql($sql);
-}
-
-function get_mcq_options($questionid) {
-    global $DB;
-    $sql = "SELECT * FROM {question_answers} WHERE question = ?";
-    return $DB->get_records_sql($sql, array($questionid));
-}
-
+?>
